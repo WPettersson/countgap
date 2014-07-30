@@ -64,7 +64,7 @@ class Election(election.Election):
         self._eliminated.append(candidate.id)
         candidate.current_ballots.sort(key=lambda x:x.data['value'], reverse=True)
         for b in candidate.current_ballots:
-            for pos,cand_id in b.list():
+            for cand_id in b.list():
                 if cand_id in _eliminated or cand_id in _winners:
                     continue
                 self.getCandidate(cand_id).ballots.append(b)
@@ -101,7 +101,7 @@ class Election(election.Election):
         # Order of transfer after a candidate is elected is not specified
         for b in c.current_ballots:
             b.updateTransferValue(transfer_value) # S273 (9b)
-            for pos,cand_id in b.list():
+            for cand_id in b.list():
                 if cand_id in _eliminated or cand_id in _winners:
                     continue
                 self.getCandidate(cand_id).ballots.append(b) # S273 (9b)
