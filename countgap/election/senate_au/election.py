@@ -25,6 +25,9 @@ class Election(election.Election):
         self.winners_required = winners
         self._num_votes = sum([b.getValue() for b in ballots])
         self._quota = math.floor(self._num_votes / (self._winners + 1)) + 1 # S273 (8)
+        # Initial allocation of ballots to candidates
+        for b in self.ballots:
+            self.getCandidate(b.list()[0]).current_ballots.append(b)
         complete = False
         while not complete:
             complete = self._next_round()
