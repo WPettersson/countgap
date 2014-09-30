@@ -1,7 +1,7 @@
 import election
 import math
 
-class Election(election.Election):
+class SenateElection(election.Election):
 
     """A class for counting Australian Senate Elections"""
 
