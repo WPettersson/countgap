@@ -27,7 +27,7 @@ class SenateElection(election.Election):
         self._quota = math.floor(self._num_votes / (self._winners + 1)) + 1 # S273 (8)
         # Initial allocation of ballots to candidates
         for b in self.ballots:
-            self.getCandidate(b.list()[0]).current_ballots.append(b)
+            self.get_candidate(b.list()[0]).current_ballots.append(b)
         complete = False
         while not complete:
             complete = self._next_round()
@@ -49,7 +49,7 @@ class SenateElection(election.Election):
             return True
         while self.elect():
             # Resort candidates since we transferred some votes
-            self.sortCandidates()
+            self.sort_candidates()
             # If someone is elected, check for more elections
             if len(self._winners) == self.winners_required:
                 return True
@@ -67,18 +67,18 @@ class SenateElection(election.Election):
             for cand_id in b.list():
                 if cand_id in _eliminated or cand_id in _winners:
                     continue
-                self.getCandidate(cand_id).ballots.append(b)
+                self.get_candidate(cand_id).ballots.append(b)
                 break
         candidate.ballots = []
 
     def mass_exclude(self):
         return False # TODO
 
-    def sortCandidates(self):
+    def sort_candidates(self):
         """Sort candidates by number of votes"""
         self.candidates.sort(key=lambda x:x.getVotes(), reverse=True)
 
-    def setNotionalVotes(self):
+    def set_notional_votes(self):
         """Calculate the number of notional votes each candidate has
 
         Requires: Candidates must already be sorted
@@ -104,12 +104,12 @@ class SenateElection(election.Election):
             for cand_id in b.list():
                 if cand_id in _eliminated or cand_id in _winners:
                     continue
-                self.getCandidate(cand_id).ballots.append(b) # S273 (9b)
+                self.get_candidate(cand_id).ballots.append(b) # S273 (9b)
                 break
         c.ballots = []
         return True
 
-    def getCandidate(self, id):
+    def get_candidate(self, id):
         for c in self.candidates:
             if c.id == id:
                 return c
