@@ -1,5 +1,6 @@
-import election
 import math
+
+import countgap.election
 
 class Candidate():
 
@@ -10,11 +11,14 @@ class Candidate():
         self._name = name
         self.current_ballots = []
 
-    def getVotes(self):
-        return sum([math.floor(x.getValue()) for x in self.current_ballots])
+    def set_votes(self):
+        self.num_votes = sum([math.floor(x.get_value()) for x in self.current_ballots])
+
+    def get_votes(self):
+        return self.num_votes
 
 
-class Ballot(election.Ballot):
+class Ballot(countgap.election.Ballot):
     def __init__(self, id, ballot_data, count=1):
         """Initialise a ballot for an Australian Senate election
 
@@ -27,14 +31,14 @@ class Ballot(election.Ballot):
         same by S273. As such, we can reduce the required number of
         computations by treating them as one ballot that is worth double.
         """
-        election.Ballot.__init__(self, id, ballot_data)
-        self.data['value'] = count
+        countgap.election.Ballot.__init__(self, id, ballot_data)
+        self.data['value'] = float(count)
 
-    def getValue(self):
+    def get_value(self):
         """Get the number of votes this ballot represents """
         return self.data['value']
 
-    def updateTransferValue(self, new_value):
-        self.data['value'] *= new_value
+    def update_transfer_value(self, new_value):
+        self.data['value'] = float(new_value)*self.data['value']
 
 # vim: sw=4:ts=4

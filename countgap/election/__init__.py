@@ -13,10 +13,10 @@ class Ballot:
     @property
     def list(self):
         if not hasattr(self, '_ballot_list'):
-            x = [[] for i in range(len(self._ballot_dict) + 10)]
-            for k, v in self._ballot_dict.items():
-                x[v-1].append(k)
-
+            x = []
+            for k in range(len(self._ballot_dict) + 10):
+                if k in self._ballot_dict:
+                    x.append(self._ballot_dict[k])
             self._ballot_list = x
         return self._ballot_list
 

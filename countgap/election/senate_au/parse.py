@@ -123,7 +123,33 @@ def read_first_prefs_by_state_file(fn):
                 "total": int(record['TotalVotes'])
             }
 
-def read_below_the_line_file(fn):
+def valid_btl_prefs(prefs, batch, paper, num_candidates):
+    if len(prefs) < 0.9*num_candidates:
+#        if batch == 1 and paper == 56:
+#            print "B%s P%s discarded, too short (%d)"%(batch,paper,len(prefs))
+        return False
+    if num_candidates > 9:
+        bad_limit = 3
+    else:
+        bad_limit = 2
+    bad = 0
+    for i in range(1, int(round(0.9*num_candidates))+1):
+        found = False
+        for p in prefs:
+            if p["preference"] == i:
+                found = True
+                break
+        if not found:
+            if i == 1:
+                return False
+            bad += 1
+        if bad == bad_limit:
+#            if batch == 1 and paper == 56:
+#                print "B%s P%s discarded, missing %d"%(batch,paper,i)
+            return False
+    return True
+
+def read_below_the_line_file(fn, num_candidates):
     with open(fn) as f:
         f.readline() # Skip pointless header
 
@@ -136,6 +162,7 @@ def read_below_the_line_file(fn):
         for record in reader:
             if int(record["Batch"]) != batch or int(record['Paper']) != paper:
                 if batch is not None and paper is not None:
+                #    if valid_btl_prefs(preferences, batch, paper, num_candidates):
                     yield {
                         "preferences": preferences,
                         "batch": batch,
@@ -150,10 +177,14 @@ def read_below_the_line_file(fn):
             cand_id = int(record['CandidateId'])
 
             try:
-                preferences.append({"candidate": cand_id, "preference": int(pref)})
+                p = int(pref)
+                if p > 0:
+                    preferences.append({"candidate": cand_id, "preference": int(pref)})
             except ValueError as e:
-                preferences.append({"candidate": cand_id, "preference": None})
+                pass
+                #preferences.append({"candidate": cand_id, "preference": None})
         else:
+            #if valid_btl_prefs(preferences, batch, paper, num_candidates):
             yield {
                 "preferences": preferences,
                 "batch": batch,
@@ -191,3 +222,5 @@ import_election_files(
 "/Users/brendan/git/countgap/data/senate-wa-2014" +\
 "/SenateStateBTLPreferences-17875-WA.csv")
 '''
+
+# vim: sw=4:ts=4
